@@ -39,8 +39,20 @@ const createContact = asyncHandler(async (req, res) => {
 //@desc Update Contact
 //@desc PUT /api/contacts/:id
 //@access public
-const UpdateContact = asyncHandler(async (req, res) => {
-  res.status(201).json({ message: `Update contact for ${req.params.id}` });
+const updateContact = asyncHandler(async (req, res) => {
+  const contact = await Contact.findById(req.params.id);
+  if (!contact) {
+    res.status(404);
+    throw new Error("Contact not found");
+  }
+
+  const updatedContact = await Contact.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    { new: true }
+  );
+
+  res.status(200).json(updatedContact);
 });
 
 //@desc Delete Contact
@@ -52,7 +64,7 @@ const deleteContact = asyncHandler(async (req, res) => {
 module.exports = {
   getContacts,
   getContact,
-  UpdateContact,
+  updateContact,
   createContact,
   deleteContact,
 };
