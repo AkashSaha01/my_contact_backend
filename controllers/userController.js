@@ -17,9 +17,9 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error("User already registered !");
   }
   const hashedPassword = await bcrypt.hash(password, 10);
-  console.log("Hashed Password", hashedPassword);
+  // console.log("Hashed Password", hashedPassword);
   const user = await User.create({ username, email, password: hashedPassword });
-  console.log(`User created ${user}`);
+  //console.log(`User created ${user}`);
   if (user) {
     res.status(201).json({ _id: user.id, email: user.email });
   } else {
@@ -53,21 +53,19 @@ const loginUser = asyncHandler(async (req, res) => {
         },
       },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "1m" }
+      { expiresIn: "60m" }
     );
     res.status(200).json({ accessToken });
   } else {
     res.status(401);
-    throw new ERROR("email or password is not valid");
+    throw new Error("email or password is not valid");
   }
 });
 //@desc Current user
 //@route GET /api/users/current
 //@access public
 const currentUser = asyncHandler(async (req, res) => {
-  res.json({
-    message: "Current user information",
-  });
+  res.json(req.user);
 });
 
 module.exports = { registerUser, loginUser, currentUser };
